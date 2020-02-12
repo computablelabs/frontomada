@@ -1,4 +1,5 @@
 import { StateMachine, Machine, assign } from 'xstate'
+import { NETWORK_ERROR, FETCH_ERROR } from '../constants'
 
 // fetch is still undefined by ts, so define it here
 declare function fetch(resource: object | string, opts: object | undefined | null): Promise<any>
@@ -22,7 +23,8 @@ export interface FetchSchema {
 export interface FetchContext {
   resource?: object | string; // fetch api Resource object or url string
   opts?: object; // fetch api 'init' object
-  payload?: any; // likely json or stringified json
+  payload?: any; // json|string|undefined
+  error?: Error | string; // actual error or an error msg
 }
 
 export interface FetchEvent {
@@ -35,11 +37,18 @@ export interface FetchEvent {
 async function invoked(ctx: FetchContext): Promise<any> {
   if (ctx.resource) {
     // NOTE: as stated above this could be refactored to an XHR2 if needed
-    return fetch(ctx.resource, ctx.opts).then(response => response.json())
+    return fetch(ctx.resource, ctx.opts)
+      .then(response => {
+        if (!response.ok) { throw new Error(NETWORK_ERROR) }
+        return response.json()
+      })
+      .catch((e) => {
+        throw e
+      })
   }
 }
 
-export function factory(): StateMachine<FetchContext, FetchSchema, FetchEvent> {
+export function fetchFactory(): StateMachine<FetchContext, FetchSchema, FetchEvent> {
   return Machine<FetchContext, FetchSchema, FetchEvent>({
     id: 'fetch',
     initial: 'idle',
@@ -47,6 +56,7 @@ export function factory(): StateMachine<FetchContext, FetchSchema, FetchEvent> {
       resource: undefined,
       opts: undefined,
       payload: undefined,
+      error: undefined,
     },
     states: {
       idle: {},
@@ -68,7 +78,7 @@ export function factory(): StateMachine<FetchContext, FetchSchema, FetchEvent> {
                 target: 'failed',
                 actions: assign({
                   // an error is an acceptable payload as well
-                  payload: (ctx, e) => e.data
+                  error: (ctx, e) => e.data
                 }),
               },
             }
