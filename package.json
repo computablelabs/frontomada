@@ -1,0 +1,37 @@
+{
+  "name": "frontomada",
+  "version": "0.1.0",
+  "description": "U[IX] via FSM",
+  "main": "index.ts",
+  "scripts": {
+    "test": "node_modules/.bin/jasmine-ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/computablelabs/frontomada.git"
+  },
+  "keywords": [
+    "Automada",
+    "Typescript",
+    "LitElement",
+    "XState",
+    "Badass"
+  ],
+  "author": "Rob Robbins",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/computablelabs/frontomada/issues"
+  },
+  "homepage": "https://github.com/computablelabs/frontomada#readme",
+  "devDependencies": {
+    "@types/jasmine": "^3.5.3",
+    "jasmine": "^3.5.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "jasmine-ts": "^0.3.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "xstate": "^4.7.8"
+  }
+}
